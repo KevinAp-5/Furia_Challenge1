@@ -155,8 +155,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 16,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
   logo: {
     width: 120,
