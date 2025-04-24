@@ -1,23 +1,38 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { useTheme } from '../theme/theme';
-import ThreeDots from '../components/loading';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useState } from "react";
+import {
+  KeyboardAvoidingView,
+  ScrollView,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  StatusBar,
+  Platform,
+  Image,
+  Alert,
+} from "react-native";
+import { useTheme } from "../theme/theme";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Title from "../components/title";
+import ThreeDots from "../components/loading";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function ForgotPasswordScreen({ navigation }: any) {
   const { colors } = useTheme();
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handlePasswordReset = async () => {
     if (!newPassword || !confirmPassword) {
-      Alert.alert('Erro', 'Por favor, preencha todos os campos.');
+      Alert.alert("Erro", "Por favor, preencha todos os campos.");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      Alert.alert('Erro', 'As senhas não coincidem.');
+      Alert.alert("Erro", "As senhas não coincidem.");
       return;
     }
 
@@ -40,48 +55,121 @@ export default function ForgotPasswordScreen({ navigation }: any) {
       navigation.navigate('Login'); // Redireciona para a tela de login
     } catch (error) {
       setLoading(false);
-      Alert.alert('Erro', error.message || 'Ocorreu um erro inesperado.');
+      Alert.alert("Erro", "Ocorreu um erro inesperado.");
     }
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.content}>
-        <Text style={[styles.title, { color: colors.primary }]}>Redefinir Senha</Text>
-        <Text style={[styles.subtitle, { color: colors.muted }]}>
-          Insira sua nova senha e confirme para redefinir.
-        </Text>
-        <TextInput
-          placeholder="Nova Senha"
-          placeholderTextColor={colors.muted}
-          secureTextEntry
-          style={[styles.input, { color: colors.primary, borderColor: colors.secondary }]}
-          value={newPassword}
-          onChangeText={setNewPassword}
-        />
-        <TextInput
-          placeholder="Confirmar Nova Senha"
-          placeholderTextColor={colors.muted}
-          secureTextEntry
-          style={[styles.input, { color: colors.primary, borderColor: colors.secondary }]}
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-        />
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: colors.secondary }]}
-          onPress={handlePasswordReset}
-          disabled={loading}
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#111" }}>
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
         >
-          {loading ? (
-            <ThreeDots />
-          ) : (
-            <Text style={[styles.buttonText, { color: colors.background }]}>Confirmar</Text>
-          )}
-        </TouchableOpacity>
-      </View>
-      <View style={styles.footer}>
-        <Text style={[styles.footerText, { color: colors.muted }]}>© 2025 FURIA. All Rights Reserved.</Text>
-      </View>
+          <Title title="FURIA" />
+          <View
+            style={[styles.content, { backgroundColor: colors.background }]}
+          >
+          <Image
+            source={require("../assets/reseticon.png")}
+            style={styles.logo}
+          />
+            <Text style={[styles.title, { color: colors.primary }]}>
+              Redefinir Senha
+            </Text>
+            <Text style={[styles.subtitle, { color: colors.muted }]}>
+              Insira sua nova senha e confirme para redefinir.
+            </Text>
+            <View style={styles.passwordContainer}>
+              <TextInput
+                placeholder="Nova senha"
+                placeholderTextColor={colors.muted}
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+                value={newPassword}
+                onChangeText={setNewPassword}
+                style={[
+                  styles.input,
+                  { color: colors.primary, borderColor: colors.secondary },
+                ]}
+              />
+              <MaterialCommunityIcons
+                name={showPassword ? "eye-off" : "eye"}
+                size={24}
+                color={colors.muted}
+                style={styles.icon}
+                onPress={() => setShowPassword(!showPassword)}
+              />
+            </View>
+            {/* <TextInput
+              placeholder="Nova Senha"
+              placeholderTextColor={colors.muted}
+              secureTextEntry
+              style={[
+                styles.input,
+                { color: colors.primary, borderColor: colors.secondary },
+              ]}
+              value={newPassword}
+              onChangeText={setNewPassword}
+            /> */}
+             <View style={styles.passwordContainer}>
+              <TextInput
+                placeholder="Confirmar Senha"
+                placeholderTextColor={colors.muted}
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                style={[
+                  styles.input,
+                  { color: colors.primary, borderColor: colors.secondary },
+                ]}
+              />
+              <MaterialCommunityIcons
+                name={showPassword ? "eye-off" : "eye"}
+                size={24}
+                color={colors.muted}
+                style={styles.icon}
+                onPress={() => setShowPassword(!showPassword)}
+              />
+            </View>
+            {/* <TextInput
+              placeholder="Confirmar Senha"
+              placeholderTextColor={colors.muted}
+              secureTextEntry
+              style={[
+                styles.input,
+                { color: colors.primary, borderColor: colors.secondary },
+              ]}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+            /> */}
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: colors.secondary }]}
+              onPress={handlePasswordReset}
+              disabled={loading}
+            >
+              {loading ? (
+                <ThreeDots />
+              ) : (
+                <Text style={[styles.buttonText, { color: colors.background }]}>
+                  Confirmar
+                </Text>
+              )}
+            </TouchableOpacity>
+          </View>
+          <View style={styles.footer}>
+            <Text style={[styles.footerText, { color: colors.muted }]}>
+              © 2025 FURIA. All Rights Reserved.
+            </Text>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -89,49 +177,68 @@ export default function ForgotPasswordScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',
-    padding: 16,
+    justifyContent: "space-between",
   },
   content: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 22,
+    fontWeight: "bold",
     marginBottom: 16,
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 24,
   },
   input: {
-    width: '100%',
+    width: "100%",
     borderWidth: 1,
     borderRadius: 8,
     padding: 12,
-    marginBottom: 16,
+    marginVertical: 8,
   },
   button: {
     padding: 12,
     borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
+    marginTop: 16,
+    width: "100%",
+    alignItems: "center",
     height: 45, // Altura fixa para evitar mudanças no tamanho
   },
   buttonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   footer: {
-    alignItems: 'center',
+    alignItems: "center",
     padding: 16,
   },
   footerText: {
     fontSize: 12,
-    textAlign: 'center',
+    textAlign: "center",
+  },
+  logo: {
+    width: 120,
+    height: 120,
+    resizeMode: "contain",
+    marginBottom: 50,
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    position: "relative",
+  },
+  icon: {
+    position: "absolute",
+    right: 15,
+    top: 16,
   },
 });
