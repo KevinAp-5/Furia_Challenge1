@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
-  StatusBar
+  StatusBar,
 } from "react-native";
 import { useTheme } from "../theme/theme";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -17,20 +17,21 @@ import ThreeDots from "../components/loading";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Title from "../components/title";
 import { Platform } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 
 export default function LoginScreen({ navigation }: Props) {
   const { colors } = useTheme();
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      // Simulação de autenticação com OAuth do Google
       setTimeout(() => {
         setLoading(false);
-        navigation.navigate("Home"); // Redireciona para a tela Home após login
+        navigation.navigate("Home");
       }, 2000);
     } catch (error) {
       console.error("Erro ao fazer login com Google:", error);
@@ -40,7 +41,7 @@ export default function LoginScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#111" }}>
-      <StatusBar barStyle="light-content" backgroundColor="#333333" />
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -50,8 +51,7 @@ export default function LoginScreen({ navigation }: Props) {
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
         >
-          <Title title="FURIA"></Title>
-
+          <Title title="FURIA" />
           <View
             style={[styles.content, { backgroundColor: colors.background }]}
           >
@@ -71,17 +71,25 @@ export default function LoginScreen({ navigation }: Props) {
                 { color: colors.primary, borderColor: colors.secondary },
               ]}
             />
-            <TextInput
-              placeholder="Senha"
-              placeholderTextColor={colors.muted}
-              secureTextEntry
-              autoCapitalize="none"
-              style={[
-                styles.input,
-                { color: colors.primary, borderColor: colors.secondary },
-              ]}
-            />
-            {/* Botão de recuperação de senha */}
+            <View style={styles.passwordContainer}>
+              <TextInput
+                placeholder="Senha"
+                placeholderTextColor={colors.muted}
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+                style={[
+                  styles.input,
+                  { color: colors.primary, borderColor: colors.secondary },
+                ]}
+              />
+              <MaterialCommunityIcons
+                name={showPassword ? "eye-off" : "eye"}
+                size={24}
+                color={colors.muted}
+                style={styles.icon}
+                onPress={() => setShowPassword(!showPassword)}
+              />
+            </View>
             <TouchableOpacity
               onPress={() => navigation.navigate("RequestPassword")}
               style={styles.forgotPasswordButton}
@@ -162,17 +170,18 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   input: {
-    width: "90%",
+    width: "100%",
     borderWidth: 1,
     borderRadius: 8,
     padding: 12,
     marginVertical: 8,
+
   },
   button: {
     padding: 12,
     borderRadius: 8,
     marginTop: 16,
-    width: "90%",
+    width: "100%",
     alignItems: "center",
     height: 45, // Altura fixa para evitar mudanças no tamanho
   },
@@ -183,7 +192,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     padding: 12,
     borderRadius: 8,
-    width: "90%",
+    width: "100%",
     alignItems: "center",
     justifyContent: "center", // Centraliza o conteúdo verticalmente
     borderWidth: 1,
@@ -197,7 +206,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     padding: 12,
     borderRadius: 8,
-    width: "90%",
+    width: "100%",
     alignItems: "center",
     borderWidth: 1,
     height: 45, // Altura fixa para evitar mudanças no tamanho
@@ -209,7 +218,7 @@ const styles = StyleSheet.create({
   forgotPasswordButton: {
     alignSelf: "flex-end", // Alinha o botão à direita
     marginTop: 8,
-    marginRight: "5%", // Pequeno espaçamento da borda direita
+    marginRight: "1%", // Pequeno espaçamento da borda direita
   },
   forgotPasswordText: {
     fontSize: 14,
@@ -222,5 +231,16 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 12,
     textAlign: "center",
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    position: "relative",
+  },
+  icon: {
+    position: "absolute",
+    right: 15,
+    top: 16,
   },
 });
