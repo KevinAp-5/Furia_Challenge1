@@ -1,17 +1,30 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
-import { useTheme } from '../theme/theme';
-import ThreeDots from '../components/loading';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useState } from "react";
+import {
+  KeyboardAvoidingView,
+  ScrollView,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  StatusBar,
+  Platform,
+  Alert,
+  Image,
+} from "react-native";
+import { useTheme } from "../theme/theme";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Title from "../components/title";
+import ThreeDots from "../components/loading";
 
 export default function RequestPasswordReset({ navigation }: any) {
   const { colors } = useTheme();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handlePasswordRecovery = async () => {
     if (!email) {
-      Alert.alert('Erro', 'Por favor, insira um e-mail válido.');
+      Alert.alert("Erro", "Por favor, insira um e-mail válido.");
       return;
     }
 
@@ -49,43 +62,69 @@ export default function RequestPasswordReset({ navigation }: any) {
       checkStatus();
     } catch (error) {
       setLoading(false);
-      Alert.alert('Erro', error.message || 'Ocorreu um erro inesperado.');
+      Alert.alert("Erro", "Ocorreu um erro inesperado.");
     }
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.content}>
-        {/* Imagem de e-mail */}
-        <Image
-          source={require('../assets/mail.png')} // Substitua pelo caminho correto da imagem
-          style={styles.mailIcon}
-        />
-        <Text style={[styles.title, { color: colors.primary }]}>Recuperação de Senha</Text>
-        <Text style={[styles.subtitle, { color: colors.muted }]}>
-          Insira seu e-mail para receber um link de recuperação de senha.
-        </Text>
-        <TextInput
-          placeholder="E-mail"
-          placeholderTextColor={colors.muted}
-          style={[styles.input, { color: colors.primary, borderColor: colors.secondary }]}
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: colors.secondary }]}
-          onPress={handlePasswordRecovery}
-          disabled={loading}
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#111" }}>
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
         >
-          {loading ? (
-            <ThreeDots />
-          ) : (
-            <Text style={[styles.buttonText, { color: colors.background }]}>Confirmar</Text>
-          )}
-        </TouchableOpacity>
-      </View>
+          <Title title="FURIA" />
+          <View
+            style={[styles.content, { backgroundColor: colors.background }]}
+          >
+            <Image
+              source={require("../assets/mail.png")}
+              style={styles.logo}
+            />
+            <Text style={[styles.title, { color: colors.primary }]}>
+              Recuperação de Senha
+            </Text>
+            <Text style={[styles.subtitle, { color: colors.muted }]}>
+              Insira seu e-mail para receber um link de recuperação de senha.
+            </Text>
+            <TextInput
+              placeholder="E-mail"
+              placeholderTextColor={colors.muted}
+              style={[
+                styles.input,
+                { color: colors.primary, borderColor: colors.secondary },
+              ]}
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: colors.secondary }]}
+              onPress={handlePasswordRecovery}
+              disabled={loading}
+            >
+              {loading ? (
+                <ThreeDots />
+              ) : (
+                <Text style={[styles.buttonText, { color: colors.background }]}>
+                  Confirmar
+                </Text>
+              )}
+            </TouchableOpacity>
+          </View>
+          <View style={styles.footer}>
+            <Text style={[styles.footerText, { color: colors.muted }]}>
+              © 2025 FURIA. All Rights Reserved.
+            </Text>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -93,45 +132,57 @@ export default function RequestPasswordReset({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    padding: 16,
+    justifyContent: "space-between",
   },
   content: {
-    alignItems: 'center',
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
-  mailIcon: {
+  logo: {
     width: 120,
     height: 120,
-    resizeMode: 'contain',
-    marginBottom: 16,
+    resizeMode: "contain",
+    marginBottom: 50,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 22,
+    fontWeight: "bold",
     marginBottom: 16,
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 24,
   },
   input: {
-    width: '100%',
+    width: "100%",
     borderWidth: 1,
     borderRadius: 8,
     padding: 12,
-    marginBottom: 16,
+    marginVertical: 8,
   },
   button: {
     padding: 12,
     borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
+    marginTop: 16,
+    width: "100%",
+    alignItems: "center",
     height: 45, // Altura fixa para evitar mudanças no tamanho
   },
   buttonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
+  },
+  footer: {
+    alignItems: "center",
+    padding: 16,
+  },
+  footerText: {
+    fontSize: 12,
+    textAlign: "center",
   },
 });
