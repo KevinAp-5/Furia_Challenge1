@@ -9,6 +9,7 @@ import {
   Image,
   StyleSheet,
   StatusBar,
+  Alert,
 } from "react-native";
 import { useTheme } from "../theme/theme";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -18,6 +19,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Title from "../components/title";
 import { Platform } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { api } from "../config/Api";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 
@@ -25,6 +27,33 @@ export default function LoginScreen({ navigation }: Props) {
   const { colors } = useTheme();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert("Erro", "Preencha e-mail e senha.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await api(
+        "POST",
+        "auth/login",
+        { "login": email, password }
+      );
+      if (response.status === 200 && response.data?.accessToken) {
+        // Aqui você pode salvar o token se quiser
+        navigation.navigate("Home");
+      } else {
+        Alert.alert("Erro", "E-mail ou senha inválidos.");
+      }
+    } catch (error: any) {
+      Alert.alert("Erro", error?.response?.data?.message || "Erro ao fazer login.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleGoogleLogin = async () => {
     setLoading(true);
@@ -66,6 +95,8 @@ export default function LoginScreen({ navigation }: Props) {
               placeholder="E-mail"
               placeholderTextColor={colors.muted}
               autoCapitalize="none"
+              value={email}
+              onChangeText={setEmail}
               style={[
                 styles.input,
                 { color: colors.primary, borderColor: colors.secondary },
@@ -77,6 +108,8 @@ export default function LoginScreen({ navigation }: Props) {
                 placeholderTextColor={colors.muted}
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
+                value={password}
+                onChangeText={setPassword}
                 style={[
                   styles.input,
                   { color: colors.primary, borderColor: colors.secondary },
@@ -102,11 +135,16 @@ export default function LoginScreen({ navigation }: Props) {
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.button, { backgroundColor: colors.secondary }]}
-              onPress={() => navigation.navigate("Home")}
+              onPress={handleLogin}
+              disabled={loading}
             >
-              <Text style={[styles.buttonText, { color: colors.background }]}>
-                Entrar
-              </Text>
+              {loading ? (
+                <ThreeDots />
+              ) : (
+                <Text style={[styles.buttonText, { color: colors.background }]}>
+                  Entrar
+                </Text>
+              )}
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.googleButton, { borderColor: colors.highlight }]}

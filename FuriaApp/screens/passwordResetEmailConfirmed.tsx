@@ -1,38 +1,70 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { useTheme } from '../theme/theme';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React from "react";
+import {
+  KeyboardAvoidingView,
+  ScrollView,
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  StatusBar,
+  Platform,
+} from "react-native";
+import { useTheme } from "../theme/theme";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Title from "../components/title";
 
 const PasswordResetEmailConfirmed = ({ navigation }: any) => {
   const { colors } = useTheme();
 
   const handleGoToForgotPassword = () => {
-    navigation.navigate('ForgotPassword');
+    navigation.navigate("ForgotPassword");
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.content}>
-        <Text style={[styles.title, { color: colors.primary }]}>E-mail Enviado!</Text>
-        <Text style={[styles.subtitle, { color: colors.muted }]}>
-          Verifique sua caixa de entrada para redefinir sua senha.
-        </Text>
-        <View style={styles.iconContainer}>
-          <Image
-            source={require('../assets/check-icon.png')} // Substitua pelo caminho correto do ícone
-            style={styles.icon}
-          />
-        </View>
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: colors.secondary }]}
-          onPress={handleGoToForgotPassword}
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#111" }}>
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
         >
-          <Text style={[styles.buttonText, { color: colors.background }]}>Redefinir Senha</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.footer}>
-        <Text style={[styles.footerText, { color: colors.muted }]}>© 2025 FURIA. All Rights Reserved.</Text>
-      </View>
+          <Title title="FURIA" />
+          <View
+            style={[styles.content, { backgroundColor: colors.background }]}
+          >
+            <View style={styles.iconContainer}>
+            <Image
+              source={require("../assets/check-icon.png")} // Substitua pelo caminho correto do ícone
+              style={styles.icon}
+            />
+            </View>
+            <Text style={[styles.title, { color: colors.primary }]}>
+              E-mail Confirmado!
+            </Text>
+            <Text style={[styles.subtitle, { color: colors.muted }]}>
+              Seu e-mail foi confirmado com sucesso. Você já pode redefinir sua senha.
+            </Text>
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: colors.secondary }]}
+              onPress={handleGoToForgotPassword}
+            >
+              <Text style={[styles.buttonText, { color: colors.background }]}>
+                Redefinir Senha
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.footer}>
+            <Text style={[styles.footerText, { color: colors.muted }]}>
+              © 2025 FURIA. All Rights Reserved.
+            </Text>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -40,58 +72,61 @@ const PasswordResetEmailConfirmed = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',
-    padding: 16,
+    justifyContent: "space-between",
   },
   content: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 22,
+    fontWeight: "bold",
     marginBottom: 16,
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 24,
   },
-  iconContainer: {
-    marginBottom: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   icon: {
-    width: 150,
-    height: 150,
-    resizeMode: 'contain',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 16,
-    backgroundColor: "#000000",
-    borderRadius: 75,
+    width: 120,
+    height: 120,
+    resizeMode: "contain",
+    marginBottom: 0,
+    marginLeft: 10
+  },
+  iconContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#111",
+    borderRadius: 100,
+    width: 120,
+    height: 120,
+    marginBottom: 24,
   },
   button: {
     padding: 12,
     borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
+    marginTop: 16,
+    width: "100%",
+    alignItems: "center",
     height: 45, // Altura fixa para evitar mudanças no tamanho
   },
   buttonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   footer: {
-    alignItems: 'center',
+    alignItems: "center",
     padding: 16,
   },
   footerText: {
     fontSize: 12,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });
 

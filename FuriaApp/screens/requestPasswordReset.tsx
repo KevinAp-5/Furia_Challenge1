@@ -16,6 +16,7 @@ import { useTheme } from "../theme/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Title from "../components/title";
 import ThreeDots from "../components/loading";
+import { api } from "../config/Api";
 
 export default function RequestPasswordReset({ navigation }: any) {
   const { colors } = useTheme();
@@ -29,40 +30,76 @@ export default function RequestPasswordReset({ navigation }: any) {
     }
 
     setLoading(true);
-
     try {
-      // Envia a requisição para o backend para iniciar o processo de recuperação de senha
-      const response = await fetch('https://seu-backend.com/api/password-recovery', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao solicitar recuperação de senha.');
+      // 1. Envia o e-mail para o backend
+      const response = await api("POST", "auth/password/forget", { email });
+      if (response.status !== 200) {
+        throw new Error(response.data?.message || "Erro ao enviar solicitação.");
       }
+      Alert.alert("E-mail enviado!", "Verifique sua caixa de entrada e confirme o e-mail.");
 
-      // Loop para verificar o status da recuperação de senha
-      const checkStatus = async () => {
-        const statusResponse = await fetch(`https://seu-backend.com/api/password-recovery/status?email=${email}`);
-        const statusData = await statusResponse.json();
-
-        if (statusData.status === 'completed') {
-          setLoading(false);
-          Alert.alert('Sucesso', 'Um e-mail de recuperação foi enviado para você.');
-          navigation.navigate('PasswordResetEmailConfirmed'); // Redireciona para a tela de confirmação
-        } else if (statusData.status === 'pending') {
-          setTimeout(checkStatus, 3000); // Tenta novamente após 3 segundos
-        } else {
-          setLoading(false);
-          Alert.alert('Erro', 'Não foi possível processar sua solicitação. Tente novamente mais tarde.');
-        }
-      };
-
-      checkStatus();
-    } catch (error) {
+      // 2. Inicia o polling para verificar se o e-mail foi confirmado
+      await waitForEmailConfirmation(email);
+    } catch (error: any) {
+      handleError(error);
+    } finally {
       setLoading(false);
-      Alert.alert("Erro", "Ocorreu um erro inesperado.");
+    }
+  };
+
+  // Polling: verifica se o e-mail foi confirmado no backend
+  const waitForEmailConfirmation = async (email: string) => {
+    let attempts = 0;
+    const maxAttempts = 18; // ~1min30s (18 * 5s)
+    await delay(5000); // Espera 5 segundos antes de começar a verificar
+
+    while (attempts < maxAttempts) {
+      try {
+        const response = await api("POST", "auth/email/confirmed", { email });
+        // O backend retorna { message: "email activated." } se confirmado
+        if (
+          response.status === 200 &&
+          typeof response.data?.message === "string" &&
+          response.data.message.trim().toLowerCase() === "email activated."
+        ) {
+          Alert.alert("Sucesso", "E-mail confirmado com sucesso!");
+          navigation.navigate("PasswordResetEmailConfirmed");
+          return;
+        }
+      } catch (error: any) {
+        // Se não confirmado, ignora e tenta novamente
+      }
+      await delay(5000);
+      attempts++;
+    }
+    Alert.alert(
+      "Atenção",
+      "Confirmação de e-mail não concluída a tempo. Tente novamente."
+    );
+  };
+
+  const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const handleError = (error: any) => {
+    if (!error.response) {
+      Alert.alert(
+        "Erro",
+        error.message || "Erro desconhecido. Tente novamente."
+      );
+      return;
+    }
+    const { status, data } = error.response;
+    const message = data?.message || "Tente novamente mais tarde.";
+    switch (status) {
+      case 400:
+        Alert.alert("Erro de Validação", message);
+        break;
+      default:
+        Alert.alert(
+          "Erro Desconhecido",
+          `Status: ${status || "N/A"} - ${message}`
+        );
+        break;
     }
   };
 

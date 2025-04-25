@@ -21,7 +21,7 @@ export default function ProfileScreen({ navigation }: any) {
 
   const handleChangePassword = () => {
     Alert.alert('Modificar Senha', 'Redirecionando para a tela de modificação de senha...');
-    navigation.navigate('ChangePassword'); // Redireciona para a tela de modificação de senha
+    navigation.navigate('RequestPassword'); // Redireciona para a tela de modificação de senha
   };
 
   return (
