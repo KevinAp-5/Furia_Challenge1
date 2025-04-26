@@ -18,13 +18,18 @@ interface DotProps {
   dotMargin?: number;
   animationDuration?: number;
   animationScale?: number;
+  color?: string;
 }
 
 interface ThreeDotsState {
   active: number;
 }
 
-export default class ThreeDots extends React.Component<{}, ThreeDotsState> {
+interface ThreeDotsProps {
+  color?: string;
+}
+
+export default class ThreeDots extends React.Component<ThreeDotsProps, ThreeDotsState> {
   interval: NodeJS.Timeout | undefined;
 
   state = {
@@ -46,11 +51,12 @@ export default class ThreeDots extends React.Component<{}, ThreeDotsState> {
 
   render() {
     const active = this.state.active;
+    const { color } = this.props;
     return (
       <View>
         <View style={styles.main}>
           {dots.map((i) => (
-            <Dot key={i} active={i === active} />
+            <Dot key={i} active={i === active} color={color} />
           ))}
         </View>
       </View>
@@ -100,13 +106,17 @@ class Dot extends React.Component<DotProps> {
   };
 
   render() {
-    const { active, size, background, activeBackground, dotMargin } = this.props;
+    const { active, size, background, activeBackground, dotMargin, color } = this.props;
     const style = {
       height: size,
       width: size,
       borderRadius: size / 2,
       marginHorizontal: dotMargin,
-      backgroundColor: active ? activeBackground : background,
+      backgroundColor: color
+        ? (active ? color : `${color}55`)
+        : active
+        ? activeBackground
+        : background,
     };
     return <Animated.View style={[style, { transform: [{ scale: this.scale }] }]} />;
   }
