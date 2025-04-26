@@ -31,16 +31,17 @@ public class SecurityConfigurations {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
             .csrf(AbstractHttpConfigurer::disable)
-            // .cors(cors -> cors.disable())
+            .cors(cors -> cors.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .headers(headers -> headers
-                .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; script-src 'self'"))
-                .frameOptions(frame -> frame.sameOrigin())
-            )
+            // .headers(headers -> headers
+            //     // .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; script-src 'self'"))
+            //     // .frameOptions(frame -> frame.sameOrigin())
+            // )
             .authorizeHttpRequests(requests -> requests
                 .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/users").hasRole("ADMIN")
+                .requestMatchers("/ws/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated() // Exige autenticação para qualquer outra coisa
