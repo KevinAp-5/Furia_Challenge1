@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.usermanager.manager.dto.authentication.AccessTokenDTO;
@@ -36,7 +36,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
 
-@RestController
+@Controller
 @RequestMapping("/api/auth/")
 @Slf4j
 public class AuthController {
@@ -83,7 +83,7 @@ public class AuthController {
         return ResponseEntity.ok(new ResponseMessage("Password reset link was sent to your e-mail."));
     }
 
-    @GetMapping("password/reset")
+    @PostMapping("password/reset")
     public ResponseEntity<ResponseMessage> confirmPasswordReset(@RequestBody @Valid PasswordResetWithEmailDTO data) {
         authService.passwordReset(data);
 
@@ -156,8 +156,8 @@ public class AuthController {
         return ResponseEntity.badRequest().body(new ResponseMessage("email not activated."));
     }
 
-    @GetMapping("me")
-    public ResponseEntity<ProfileDTO> getUserInfo(@Valid AccessTokenDTO token) {
+    @PostMapping("me")
+    public ResponseEntity<ProfileDTO> getUserInfo(@RequestBody @Valid AccessTokenDTO token) {
         var response = authService.getUserProfile(token);
         return ResponseEntity.ok(response);
     }
