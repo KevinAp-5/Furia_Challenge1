@@ -17,6 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Title from "../components/title";
 import ThreeDots from "../components/loading";
 import { api } from "../config/Api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function RequestPasswordReset({ navigation }: any) {
   const { colors } = useTheme();
@@ -37,6 +38,7 @@ export default function RequestPasswordReset({ navigation }: any) {
         throw new Error(response.data?.message || "Erro ao enviar solicitação.");
       }
       Alert.alert("E-mail enviado!", "Verifique sua caixa de entrada e confirme o e-mail.");
+      await AsyncStorage.setItem("email", email);
 
       // 2. Inicia o polling para verificar se o e-mail foi confirmado
       await waitForEmailConfirmation(email);
@@ -62,7 +64,7 @@ export default function RequestPasswordReset({ navigation }: any) {
           typeof response.data?.message === "string" &&
           response.data.message.trim().toLowerCase() === "email activated."
         ) {
-          Alert.alert("Sucesso", "E-mail confirmado com sucesso!");
+          // Alert.alert("Sucesso", "E-mail confirmado com sucesso!");
           navigation.navigate("PasswordResetEmailConfirmed");
           return;
         }
@@ -209,6 +211,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     width: "100%",
     alignItems: "center",
+    justifyContent: "center",
     height: 45, // Altura fixa para evitar mudanças no tamanho
   },
   buttonText: {
