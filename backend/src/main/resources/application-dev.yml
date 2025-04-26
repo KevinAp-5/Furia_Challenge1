@@ -50,6 +50,10 @@ api:
       secret: ${jwt_secret:my-secret-key}
       refresh:
         expiration: 10080
+openroute:
+  security:
+    token:
+      secret: ${openroute_token}
 management:
   endpoints:
     web:
