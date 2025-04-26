@@ -10,6 +10,7 @@ import {
   StyleSheet,
   StatusBar,
   Alert,
+  PanResponder,
 } from "react-native";
 import { useTheme } from "../theme/theme";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -20,8 +21,8 @@ import Title from "../components/title";
 import { Platform } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { api } from "../config/Api";
-
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
+import * as SecureStore from "expo-secure-store";
 
 export default function LoginScreen({ navigation }: Props) {
   const { colors } = useTheme();
@@ -42,8 +43,8 @@ export default function LoginScreen({ navigation }: Props) {
         "auth/login",
         { "login": email, password }
       );
-      if (response.status === 200 && response.data?.accessToken) {
-        // Aqui você pode salvar o token se quiser
+      if (response.status === 200 && response.data?.token) {
+        await SecureStore.setItemAsync('accessToken', response.data.token);
         navigation.navigate("Home");
       } else {
         Alert.alert("Erro", "E-mail ou senha inválidos.");
@@ -55,18 +56,18 @@ export default function LoginScreen({ navigation }: Props) {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    try {
-      setTimeout(() => {
-        setLoading(false);
-        navigation.navigate("Home");
-      }, 2000);
-    } catch (error) {
-      console.error("Erro ao fazer login com Google:", error);
-      setLoading(false);
-    }
-  };
+  // const handleGoogleLogin = async () => {
+  //   setLoading(true);
+  //   try {
+  //     setTimeout(() => {
+  //       setLoading(false);
+  //       navigation.navigate("Home");
+  //     }, 2000);
+  //   } catch (error) {
+  //     console.error("Erro ao fazer login com Google:", error);
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#111" }}>
@@ -146,7 +147,7 @@ export default function LoginScreen({ navigation }: Props) {
                 </Text>
               )}
             </TouchableOpacity>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={[styles.googleButton, { borderColor: colors.highlight }]}
               onPress={handleGoogleLogin}
               disabled={loading}
@@ -160,7 +161,7 @@ export default function LoginScreen({ navigation }: Props) {
                   Continuar com Google
                 </Text>
               )}
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity
               style={[styles.registerButton, { borderColor: colors.accent }]}
               onPress={() => navigation.navigate("Register")}
@@ -221,6 +222,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     width: "100%",
     alignItems: "center",
+    justifyContent: "center",
     height: 45, // Altura fixa para evitar mudanças no tamanho
   },
   buttonText: {
