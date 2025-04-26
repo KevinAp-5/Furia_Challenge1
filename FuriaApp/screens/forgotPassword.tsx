@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   KeyboardAvoidingView,
   ScrollView,
@@ -17,6 +17,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Title from "../components/title";
 import ThreeDots from "../components/loading";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { api } from "../config/Api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function ForgotPasswordScreen({ navigation }: any) {
   const { colors } = useTheme();
@@ -24,38 +26,45 @@ export default function ForgotPasswordScreen({ navigation }: any) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState<string>("");
+
+  useEffect(() => {
+    AsyncStorage.getItem("email").then((savedEmail) => {
+      if (savedEmail) setEmail(savedEmail);
+    });
+  }, []);
 
   const handlePasswordReset = async () => {
     if (!newPassword || !confirmPassword) {
       Alert.alert("Erro", "Por favor, preencha todos os campos.");
       return;
     }
-
     if (newPassword !== confirmPassword) {
       Alert.alert("Erro", "As senhas não coincidem.");
       return;
     }
-
+    if (!email) {
+      Alert.alert("Erro", "E-mail não encontrado. Tente novamente o fluxo de recuperação.");
+      return;
+    }
     setLoading(true);
-
     try {
-      // Envia a requisição para o backend para redefinir a senha
-      const response = await fetch('https://seu-backend.com/api/password-reset', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: newPassword }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao redefinir a senha.');
+      const response = await api(
+        "POST",
+        "auth/password/reset",
+        { email, password: newPassword }
+      );
+      if (response.status === 200) {
+        setLoading(false);
+        Alert.alert('Sucesso', 'Sua senha foi redefinida com sucesso.');
+        navigation.navigate('Login');
+      } else {
+        setLoading(false);
+        Alert.alert("Erro", response.data?.message || "Erro ao redefinir a senha.");
       }
-
+    } catch (error: any) {
       setLoading(false);
-      Alert.alert('Sucesso', 'Sua senha foi redefinida com sucesso.');
-      navigation.navigate('Login'); // Redireciona para a tela de login
-    } catch (error) {
-      setLoading(false);
-      Alert.alert("Erro", "Ocorreu um erro inesperado.");
+      Alert.alert("Erro", error?.response?.data?.message || "Ocorreu um erro inesperado.");
     }
   };
 
@@ -75,10 +84,10 @@ export default function ForgotPasswordScreen({ navigation }: any) {
           <View
             style={[styles.content, { backgroundColor: colors.background }]}
           >
-          <Image
-            source={require("../assets/reseticon.png")}
-            style={styles.logo}
-          />
+            <Image
+              source={require("../assets/reseticon.png")}
+              style={styles.logo}
+            />
             <Text style={[styles.title, { color: colors.primary }]}>
               Redefinir Senha
             </Text>
@@ -106,18 +115,7 @@ export default function ForgotPasswordScreen({ navigation }: any) {
                 onPress={() => setShowPassword(!showPassword)}
               />
             </View>
-            {/* <TextInput
-              placeholder="Nova Senha"
-              placeholderTextColor={colors.muted}
-              secureTextEntry
-              style={[
-                styles.input,
-                { color: colors.primary, borderColor: colors.secondary },
-              ]}
-              value={newPassword}
-              onChangeText={setNewPassword}
-            /> */}
-             <View style={styles.passwordContainer}>
+            <View style={styles.passwordContainer}>
               <TextInput
                 placeholder="Confirmar Senha"
                 placeholderTextColor={colors.muted}
@@ -138,17 +136,6 @@ export default function ForgotPasswordScreen({ navigation }: any) {
                 onPress={() => setShowPassword(!showPassword)}
               />
             </View>
-            {/* <TextInput
-              placeholder="Confirmar Senha"
-              placeholderTextColor={colors.muted}
-              secureTextEntry
-              style={[
-                styles.input,
-                { color: colors.primary, borderColor: colors.secondary },
-              ]}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-            /> */}
             <TouchableOpacity
               style={[styles.button, { backgroundColor: colors.secondary }]}
               onPress={handlePasswordReset}
@@ -211,7 +198,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     width: "100%",
     alignItems: "center",
-    height: 45, // Altura fixa para evitar mudanças no tamanho
+    height: 45,
   },
   buttonText: {
     fontWeight: "bold",
