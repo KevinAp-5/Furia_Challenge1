@@ -10,17 +10,55 @@ import {
   StyleSheet,
   StatusBar,
   Platform,
+  Alert,
 } from "react-native";
 import { useTheme } from "../theme/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Title from "../components/title";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { api } from "../config/Api";
 
 export default function RegisterScreen({ navigation }: any) {
   const { colors } = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleRegister = async () => {
+    if (!name || !email || !password) {
+      Alert.alert("Erro", "Preencha todos os campos.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await api(
+        "POST",
+        "auth/register",
+        { name, "login": email, password }
+      );
+      if (response.status === 201 || response.status === 200) {
+        setLoading(false);
+        Alert.alert(
+          "Registro realizado!",
+          "Verifique seu e-mail para confirmar o cadastro antes de acessar a plataforma.",
+          [
+            {
+              text: "OK",
+              onPress: () => navigation.navigate("Login"),
+            },
+          ]
+        );
+      } else {
+        setLoading(false);
+        Alert.alert("Erro", (response.data as { message: string })?.message || "Erro ao registrar.");
+      }
+    } catch (error: any) {
+      setLoading(false);
+      Alert.alert("Erro", error?.response?.data?.message || "Erro ao registrar.");
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#111" }}>
@@ -48,6 +86,8 @@ export default function RegisterScreen({ navigation }: any) {
             <TextInput
               placeholder="Nome"
               placeholderTextColor={colors.muted}
+              value={name}
+              onChangeText={setName}
               style={[
                 styles.input,
                 { color: colors.primary, borderColor: colors.secondary },
@@ -58,10 +98,12 @@ export default function RegisterScreen({ navigation }: any) {
               placeholderTextColor={colors.muted}
               autoCapitalize="none"
               value={email}
+              onChangeText={setEmail}
               style={[
                 styles.input,
                 { color: colors.primary, borderColor: colors.secondary },
               ]}
+              keyboardType="email-address"
             />
             <View style={styles.passwordContainer}>
               <TextInput
@@ -69,6 +111,7 @@ export default function RegisterScreen({ navigation }: any) {
                 placeholderTextColor={colors.muted}
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
+                onChangeText={setPassword}
                 value={password}
                 style={[
                   styles.input,
@@ -85,10 +128,11 @@ export default function RegisterScreen({ navigation }: any) {
             </View>
             <TouchableOpacity
               style={[styles.button, { backgroundColor: colors.secondary }]}
-              onPress={() => navigation.navigate("Login")}
+              onPress={handleRegister}
+              disabled={loading}
             >
               <Text style={[styles.buttonText, { color: colors.background }]}>
-                Registrar
+                {loading ? "Enviando..." : "Registrar"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -106,7 +150,7 @@ export default function RegisterScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "space-between", // Garante que o conteúdo e o rodapé fiquem separados
+    justifyContent: "space-between",
   },
   content: {
     flex: 1,
@@ -140,7 +184,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     width: "100%",
     alignItems: "center",
-    height: 45, // Altura fixa para evitar mudanças no tamanho
+    height: 45,
   },
   buttonText: {
     fontWeight: "bold",
