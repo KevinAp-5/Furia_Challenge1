@@ -2,9 +2,9 @@ spring:
   application:
     name: login
   datasource:
-    url: jdbc:postgresql://switchyard.proxy.rlwy.net:39563/${PGDATABASE}
-    username: ${PGUSER}
-    password: ${PGPASSWORD}
+    url: jdbc:postgresql://{DB_HOSTNAME}.{DB_HOST}/login_lyfe
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     hikari:
       maximum-pool-size: 50 # Número máximo de conexões no pool
       minimum-idle: 10 # Número mínimo de conexões ociosas
