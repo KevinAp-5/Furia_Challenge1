@@ -82,7 +82,7 @@ export default function ChatScreen() {
             return prev;
           }
           let filtered = prev;
-          if (chatMsg.sender === "FURIA Bot") {
+          if (chatMsg.sender === "FURIA IA") {
             filtered = prev.filter((m) => !m.loading);
           }
           return [
@@ -106,7 +106,7 @@ export default function ChatScreen() {
             ...prev,
             {
               id: "typing-indicator",
-              sender: "FURIA Bot",
+              sender: "FURIA IA",
               text: "",
               loading: true,
             },
@@ -136,7 +136,7 @@ export default function ChatScreen() {
         userMsg,
         {
           id: "typing-indicator",
-          sender: "FURIA Bot",
+          sender: "FURIA IA",
           text: "",
           loading: true,
         },

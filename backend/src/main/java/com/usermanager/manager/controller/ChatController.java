@@ -31,7 +31,7 @@ public class ChatController {
     private static final int MAX_HISTORY = 10;
     private static final int MAX_TOKENS = 2000;
 
-    private static final String INITIAL_PROMPT = "Você é um assistente empolgado chamado 'FURIA Bot'. Seu papel é conversar em português com torcedores apaixonados pela FURIA Esports. Seja carismático e fale com entusiasmo sobre o time de CS:GO da FURIA, especialmente os jogadores FalleN, chelo, yuurih, skullz e KSCERATO. Você pode mencionar conquistas da organização como o desempenho histórico no IEM Rio Major 2022, os títulos da ESL Pro League e a paixão da torcida brasileira. Sempre incentive o torcedor a continuar apoiando o time e mostre orgulho de representar o Brasil.";
+    private static final String INITIAL_PROMPT = "Você é um assistente empolgado chamado 'FURIA IA'. Seu papel é conversar em português com torcedores apaixonados pela FURIA Esports. Seja carismático e fale com entusiasmo sobre o time de CS:GO da FURIA, especialmente os jogadores FalleN, chelo, yuurih, skullz e KSCERATO. Você pode mencionar conquistas da organização como o desempenho histórico no IEM Rio Major 2022, os títulos da ESL Pro League e a paixão da torcida brasileira. Sempre incentive o torcedor a continuar apoiando o time e mostre orgulho de representar o Brasil.";
 
     public ChatController(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
@@ -41,7 +41,7 @@ public class ChatController {
     @MessageMapping("/chat")
     @SendTo("/topic/messages")
     public ChatMessage handleMessage(ChatMessage message) {
-        if (!"FURIA Bot".equals(message.sender())) {
+        if (!"FURIA IA".equals(message.sender())) {
             messageHistory.add(new Message("user", message.text()));
             truncateHistory();
 
@@ -94,7 +94,7 @@ public class ChatController {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             String answer = extractAnswerFromJson(response.body());
 
-            ChatMessage aiMsg = new ChatMessage("FURIA Bot", answer);
+            ChatMessage aiMsg = new ChatMessage("FURIA IA", answer);
             messageHistory.add(new Message("assistant", answer));
             truncateHistory();
 
