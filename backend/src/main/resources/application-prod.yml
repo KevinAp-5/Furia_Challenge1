@@ -2,7 +2,7 @@ spring:
   application:
     name: login
   datasource:
-    url: jdbc:postgresql://{DB_HOSTNAME}.{DB_HOST}/login_lyfe
+    url: jdbc:postgresql://dpg-d07uhaa4d50c73fhofsg-a.oregon-postgres.render.com/login_lyfe
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     hikari:
