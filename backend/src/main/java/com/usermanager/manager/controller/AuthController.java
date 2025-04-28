@@ -162,6 +162,11 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping
+    public ResponseEntity<String> cronJob() {
+        return ResponseEntity.ok("Application is working.");
+    }
+
     private Cookie createCookie(String name, String value) {
         Cookie cookie = new Cookie(name, value);
         cookie.setHttpOnly(true);
