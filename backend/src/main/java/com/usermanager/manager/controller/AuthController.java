@@ -90,18 +90,6 @@ public class AuthController {
         return ResponseEntity.ok().body(new ResponseMessage("Password changed successfully."));
     }
 
-    // @PostMapping("/password/reset")
-    // public ResponseEntity<String> requestPasswordReset(@RequestBody @Valid
-    // ResetPasswordBody resetPasswordBody) {
-    // boolean canReset = autenticacaoService.resetSenhaEmail(resetPasswordBody);
-    // if (!canReset) {
-    // return new ResponseEntity<>("Usuário não encontrado. Faça cadastro",
-    // HttpStatus.NOT_FOUND);
-    // }
-    // return new ResponseEntity<>("Link para redefinir senha foi enviada para o
-    // e-mail.", HttpStatus.OK);
-    // }
-
     @GetMapping("/password/reset/confirmEmail")
     public String confirmEmailreset(@RequestParam("token") String uuid, Model model) {
         boolean confirmado = authService.confirmEmail(convertStringToUUID(uuid));
@@ -162,8 +150,9 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping
+    @GetMapping("cron")
     public ResponseEntity<String> cronJob() {
+        log.info("Application is running.");
         return ResponseEntity.ok("Application is working.");
     }
 

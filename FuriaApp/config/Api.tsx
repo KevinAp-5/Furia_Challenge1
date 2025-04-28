@@ -19,7 +19,7 @@ type HttpMethod = Method;
 
 // Configuração padrão da API
 const DEFAULT_CONFIG: AxiosRequestConfig = {
-  baseURL: 'http://192.168.1.7:8080/api/',
+  baseURL: 'https://furia-challenge1.onrender.com/api/',
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json; charset=UTF-8',
