@@ -17,6 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Title from "../components/title";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { api } from "../config/Api";
+import ThreeDots from "../components/loading";
 
 export default function RegisterScreen({ navigation }: any) {
   const { colors } = useTheme();
@@ -131,9 +132,13 @@ export default function RegisterScreen({ navigation }: any) {
               onPress={handleRegister}
               disabled={loading}
             >
-              <Text style={[styles.buttonText, { color: colors.background }]}>
-                {loading ? "Enviando..." : "Registrar"}
-              </Text>
+              {loading ? (
+                <ThreeDots color={colors.background} />
+              ) : (
+                <Text style={[styles.buttonText, { color: colors.background }]}>
+                  Registrar
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
           <View style={styles.footer}>
