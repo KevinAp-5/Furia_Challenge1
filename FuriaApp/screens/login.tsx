@@ -56,19 +56,6 @@ export default function LoginScreen({ navigation }: Props) {
     }
   };
 
-  // const handleGoogleLogin = async () => {
-  //   setLoading(true);
-  //   try {
-  //     setTimeout(() => {
-  //       setLoading(false);
-  //       navigation.navigate("Home");
-  //     }, 2000);
-  //   } catch (error) {
-  //     console.error("Erro ao fazer login com Google:", error);
-  //     setLoading(false);
-  //   }
-  // };
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#111" }}>
       <StatusBar barStyle="light-content" backgroundColor="#000000" />
@@ -140,28 +127,14 @@ export default function LoginScreen({ navigation }: Props) {
               disabled={loading}
             >
               {loading ? (
-                <ThreeDots />
+                <ThreeDots color={colors.background}/>
               ) : (
                 <Text style={[styles.buttonText, { color: colors.background }]}>
                   Entrar
                 </Text>
               )}
             </TouchableOpacity>
-            {/* <TouchableOpacity
-              style={[styles.googleButton, { borderColor: colors.highlight }]}
-              onPress={handleGoogleLogin}
-              disabled={loading}
-            >
-              {loading ? (
-                <ThreeDots />
-              ) : (
-                <Text
-                  style={[styles.googleButtonText, { color: colors.highlight }]}
-                >
-                  Continuar com Google
-                </Text>
-              )}
-            </TouchableOpacity> */}
+
             <TouchableOpacity
               style={[styles.registerButton, { borderColor: colors.accent }]}
               onPress={() => navigation.navigate("Register")}

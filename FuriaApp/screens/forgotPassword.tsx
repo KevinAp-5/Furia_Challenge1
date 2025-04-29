@@ -142,7 +142,7 @@ export default function ForgotPasswordScreen({ navigation }: any) {
               disabled={loading}
             >
               {loading ? (
-                <ThreeDots />
+                <ThreeDots color={colors.background}/>
               ) : (
                 <Text style={[styles.buttonText, { color: colors.background }]}>
                   Confirmar
@@ -198,6 +198,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     width: "100%",
     alignItems: "center",
+    justifyContent: "center",
     height: 45,
   },
   buttonText: {

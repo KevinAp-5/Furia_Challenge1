@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   KeyboardAvoidingView,
   ScrollView,
@@ -23,6 +23,26 @@ export default function RequestPasswordReset({ navigation }: any) {
   const { colors } = useTheme();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [counter, setCounter] = useState(60);
+  const [canResend, setCanResend] = useState(false);
+
+  // Timer para o contador de 60 segundos
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (loading && counter > 0) {
+      timer = setTimeout(() => setCounter((prev) => prev - 1), 1000);
+    }
+    if (counter === 0) {
+      setCanResend(true);
+    } else {
+      setCanResend(false);
+    }
+    if (!loading) {
+      setCounter(60);
+      setCanResend(false);
+    }
+    return () => clearTimeout(timer);
+  }, [loading, counter]);
 
   const handlePasswordRecovery = async () => {
     if (!email) {
@@ -31,6 +51,8 @@ export default function RequestPasswordReset({ navigation }: any) {
     }
 
     setLoading(true);
+    setCounter(60); // Reinicia o contador ao enviar
+    setCanResend(false);
     try {
       // 1. Envia o e-mail para o backend
       const response = await api("POST", "auth/password/forget", { email });
@@ -52,7 +74,7 @@ export default function RequestPasswordReset({ navigation }: any) {
   // Polling: verifica se o e-mail foi confirmado no backend
   const waitForEmailConfirmation = async (email: string) => {
     let attempts = 0;
-    const maxAttempts = 18; // ~1min30s (18 * 5s)
+    const maxAttempts = 25;
     await delay(5000); // Espera 5 segundos antes de começar a verificar
 
     while (attempts < maxAttempts) {
@@ -144,18 +166,31 @@ export default function RequestPasswordReset({ navigation }: any) {
               autoCapitalize="none"
             />
             <TouchableOpacity
-              style={[styles.button, { backgroundColor: colors.secondary }]}
+              style={[
+                styles.button,
+                { backgroundColor: canResend || !loading ? colors.secondary : colors.muted },
+              ]}
               onPress={handlePasswordRecovery}
-              disabled={loading}
+              disabled={loading && !canResend}
             >
-              {loading ? (
-                <ThreeDots />
+              {loading && !canResend ? (
+                <ThreeDots color={colors.background} />
               ) : (
                 <Text style={[styles.buttonText, { color: colors.background }]}>
-                  Confirmar
+                  {canResend ? "Reenviar e-mail" : "Confirmar"}
                 </Text>
               )}
             </TouchableOpacity>
+            {loading && counter > 0 && (
+              <Text style={{ color: colors.muted, marginTop: 12 }}>
+                Aguardando confirmação do e-mail... ({counter}s)
+              </Text>
+            )}
+            {canResend && (
+              <Text style={{ color: colors.secondary, marginTop: 12 }}>
+                Não recebeu o e-mail? Você pode reenviar agora.
+              </Text>
+            )}
           </View>
           <View style={styles.footer}>
             <Text style={[styles.footerText, { color: colors.muted }]}>

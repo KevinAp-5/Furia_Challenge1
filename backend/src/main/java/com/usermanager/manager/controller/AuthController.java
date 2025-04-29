@@ -64,13 +64,13 @@ public class AuthController {
     }
 
     @GetMapping("register/confirm")
-    public ResponseEntity<ResponseMessage> confirmUser(@RequestParam("token") @NotBlank String token) {
+    public String confirmUser(@RequestParam("token") @NotBlank String token) {
         boolean validated = verificationService.confirmVerificationToken(convertStringToUUID(token));
         if (validated) {
-            return ResponseEntity.ok(new ResponseMessage("User confirmed with success."));
+            return "account_confirmed";
         }
 
-        return ResponseEntity.badRequest().body(new ResponseMessage("Unable to activate user. Try again later"));
+        return "account_not_confirmed";
     }
 
     @PostMapping("password/forget")
