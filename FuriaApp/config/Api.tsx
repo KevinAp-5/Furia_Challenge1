@@ -54,7 +54,7 @@ const createApiInstance = (config: AxiosRequestConfig = {}): AxiosInstance => {
 // Tratamento centralizado de erros
 const handleApiError = (error: AxiosError): void => {
   if (error.response) {
-    console.error(
+    console.log(
       `API Error - Status: ${error.response.status}`,
       error.response.data
     );
@@ -66,9 +66,9 @@ const handleApiError = (error: AxiosError): void => {
     ) {
       return;
     }
-    console.error('API Error - No response received:', error.request);
+    console.log('API Error - No response received:', error.request);
   } else {
-    console.error('API Error - Request setup error:', error.message);
+    console.log('API Error - Request setup error:', error.message);
   }
 };
 
@@ -110,7 +110,7 @@ export const api = async <T = unknown, D = unknown>(
       // Silencia o erro nobridgeError
       throw error;
     }
-    console.error(`[API] Error in ${method.toUpperCase()} ${endpoint}:`, error);
+    console.log(`[API] Error in ${method.toUpperCase()} ${endpoint}:`, error);
     throw error;
   }
 };
