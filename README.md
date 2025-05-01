@@ -112,18 +112,6 @@ SUB  /topic/typing    - Status de digitação
 SEND /app/chat        - Enviar mensagem
 ```
 
-## 🧪 Testes
-
-```bash
-# Backend
-cd backend
-mvn test
-
-# Frontend
-cd FuriaApp
-npm test
-```
-
 ## 📦 Estrutura do Projeto
 
 ```
